@@ -200,7 +200,7 @@ async function ghFillSite(c) {
   const s = await ghSiteState(c), el = $('ghSite');
   if (!el || GH_ST.view !== 'main') return;
   GH_ST.site = s.url || '';
-  if (s.k === 'on') el.innerHTML = '<div class="slabel">الموقع</div>' + uiNote('الموقع يعمل ✓ — ' + esc(s.t)) + (s.url ? '<div class="slabel" dir="ltr">' + esc(s.url) + '</div>' : '') + '<button type="button" class="btn primary" data-act="app">فتح التطبيق</button>';
+  if (s.k === 'on') el.innerHTML = '<div class="slabel">الموقع</div>' + uiNote('الموقع يعمل ✓ — ' + esc(s.t)) + (s.url ? '<div class="slabel" dir="ltr">' + esc(s.url) + '</div>' : '');
 }
 /* نافذة بعد الدفع/التفعيل: زر فتح التطبيق + تلميح التثبيت */
 function ghAppDialog(c, url, n) {
@@ -217,6 +217,16 @@ function ghAppDialog(c, url, n) {
 const GH_ST = { view: '', repos: null, create: null, msg: '', site: '', after: '', pushMsg: '' };
 /* العودة إلى نافذة الدفع بعد تغيير المستودع (أو الرجوع منه) مع إبقاء رسالة الـ commit */
 function ghResumePush() { const m = GH_ST.pushMsg; GH_ST.after = ''; ui.close(null); setTimeout(() => githubPush(undefined, m), 120); }
+/* تحويل المشروع إلى تطبيق (PWA) ثم دفعه، وفتح صفحة المشروع على GitHub Pages */
+function ghConvertApp() {
+  const c = ghCfg(); if (!c.token || !ghRepoOk(c.repo)) return githubDialog();
+  ghSaveCfg({ token: c.token, repo: c.repo, branch: c.branch, dir: c.dir, jk: true });
+  return githubPush(undefined, 'تحويل المشروع إلى تطبيق (PWA) من CodePatcher');
+}
+function ghOpenSite() {
+  const c = ghCfg(); if (!ghRepoOk(c.repo)) return githubDialog();
+  window.open(jkSiteUrl(c.repo), '_blank', 'noopener');
+}
 async function githubDialog(view, after) {
   const c = ghCfg(), raw = ghRaw();
   GH_ST.after = after === 'push' ? 'push' : '';
@@ -253,6 +263,7 @@ async function githubDialog(view, after) {
       uiRow('repos', 'folder-open', 'تغيير المستودع', 'اختر مستودعاً آخر لهذا المشروع') +
       '<div class="slabel">رسالة الـ commit</div><input type="text" id="ghMsg" value="' + esc(GH_ST.msg || ghDefMsg()) + '">' +
       '<button type="button" class="btn primary" data-act="push">دفع المشروع إلى <bdi dir="ltr">' + esc(rn) + '</bdi></button>' +
+      '<div class="srow"><button type="button" class="btn" data-act="jkgo">تحويل إلى تطبيق</button><button type="button" class="btn" data-act="app">فتح الصفحة</button></div>' +
       '<div id="ghSite"></div>' +
       '<div class="srow"><button type="button" class="btn" data-act="web">فتح المستودع</button><button type="button" class="btn" data-act="new">مستودع جديد</button><button type="button" class="btn" data-act="set">الإعدادات</button></div>' +
       '<button type="button" class="btn" data-ui="cancel">إغلاق</button>', act => {
@@ -262,6 +273,7 @@ async function githubDialog(view, after) {
         if (act === 'set') return go('set');
         if (act === 'web') return doOpen('https://github.com/' + c.repo);
         if (act === 'app') return doOpen(GH_ST.site || jkSiteUrl(c.repo));
+        if (act === 'jkgo') { ui.close(null); return void setTimeout(ghConvertApp, 120); }
       });
     GH_ST.site = ''; ghFillSite(c);
     return;

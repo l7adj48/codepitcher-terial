@@ -18,8 +18,8 @@ function jkInject(html, o) {
   if (o.icon && !/<link[^>]+rel=["'](?:shortcut )?icon["']/i.test(html)) head += '<link rel="icon" type="image/png" href="icon-192.png">';
   if (o.icon && !/<link[^>]+rel=["']apple-touch-icon["']/i.test(html)) head += '<link rel="apple-touch-icon" href="icon-192.png">';
   if (!/serviceWorker\s*\.\s*register/.test(html)) body = '<script>if("serviceWorker"in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});</script>';
-  if (body) { const i = low.lastIndexOf('</body>'), blk = JK_A + body + JK_B + '\n'; html = i >= 0 ? html.slice(0, i) + blk + html.slice(i) : html + '\n' + blk; }
-  if (head) { const i = low.indexOf('</head>'), blk = JK_A + head + JK_B + '\n'; html = i >= 0 ? html.slice(0, i) + blk + html.slice(i) : blk + html; }
+  if (body) { const i = low.lastIndexOf('</body>'), blk = '<!--CP-PWA-->' + body + '<!--/CP-PWA-->' + '\n'; html = i >= 0 ? html.slice(0, i) + blk + html.slice(i) : html + '\n' + blk; }
+  if (head) { const i = low.indexOf('</head>'), blk = '<!--CP-PWA-->' + head + '<!--/CP-PWA-->' + '\n'; html = i >= 0 ? html.slice(0, i) + blk + html.slice(i) : blk + html; }
   return html;
 }
 function jkManifest(m) {

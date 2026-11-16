@@ -16,6 +16,11 @@
       { i: 'upload-cloud', t: 'دفع التعديلات', d: linked ? 'commit واحد — ويمكن تغيير المستودع قبل الدفع' : 'تختار المستودع أولاً', fn: () => githubPush() },
       ...(linked ? [{ i: 'download-cloud', t: 'سحب آخر تحديثات', d: 'يسأل قبل استبدال أي ملف', fn: () => ghPull() }] : []),
       { i: 'import', t: 'استيراد مشروع من GitHub', d: 'مستودع عام أو خاص', fn: () => ghImportDialog() },
+      ...(linked ? [
+        { sep: 1 },
+        { i: 'layers', t: 'تحويل المشروع إلى تطبيق (PWA)', d: 'يُدفع المشروع ويصير قابلاً للتثبيت', fn: () => ghConvertApp() },
+        { i: 'monitor', t: 'فتح الصفحة', d: 'موقع المشروع على GitHub Pages', fn: () => ghOpenSite() }
+      ] : []),
       { sep: 1 },
       { i: linked ? 'folder-open' : 'github', t: linked ? 'تغيير المستودع' : 'اختيار مستودع', fn: () => githubDialog('pick') },
       { i: 'plus', t: 'مستودع جديد', fn: () => githubDialog('create') },
