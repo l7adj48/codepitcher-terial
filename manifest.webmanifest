@@ -5,7 +5,7 @@
   "description": "CodePatcher Terial — professional code patching workspace",
   "lang": "ar",
   "dir": "rtl",
-  "start_url": "./",
+  "start_url": "./?app=terial",
   "scope": "./",
   "display": "standalone",
   "background_color": "#080d1b",
