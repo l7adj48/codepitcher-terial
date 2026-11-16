@@ -17,7 +17,7 @@
         if (names.every(n => n === names[0]) && names[0]) return names[0];
       }
     } catch (_) {}
-    return 'مشروع CodePatcher';
+    return 'مشروع CodePatcher Terial';
   }
 
   function recentList() {
@@ -111,8 +111,8 @@
   }
 
   function about() {
-    ui.show('<h3>حول CodePatcher</h3><div class="cp-project"><div class="cp-project-icon">' + icon('code') +
-      '</div><div class="cp-project-meta"><b>CodePatcher</b><small>منصة إدارة الباتشات والنسخ والتبادل مع الذكاء الاصطناعي</small></div></div>' +
+    ui.show('<h3>حول CodePatcher Terial</h3><div class="cp-project"><div class="cp-project-icon">' + icon('code') +
+      '</div><div class="cp-project-meta"><b>CodePatcher Terial</b><small>منصة إدارة الباتشات والنسخ والتبادل مع الذكاء الاصطناعي</small></div></div>' +
       '<div class="slabel">تحويل المشاريع لنص والعكس · تطبيق الباتشات الذري · تقارير الإصلاح للذكاء · تتبع الإصدارات والمقارنة بينها</div>' +
       '<button type="button" class="btn" data-ui="cancel">إغلاق</button>');
   }
@@ -146,7 +146,7 @@
       '<button type="button" class="btn" data-cp="history">' + icon('list') + ' سجل العمليات</button>' +
       '<button type="button" class="btn" data-cp="patch-history">' + icon('layers') + ' سجل الباتشات</button>' +
       '<button type="button" class="btn" data-cp="settings">' + icon('settings') + ' الإعدادات والمظهر</button>' +
-      '<button type="button" class="btn" data-cp="about">' + icon('alert-circle') + ' حول CodePatcher</button>' +
+      '<button type="button" class="btn" data-cp="about">' + icon('alert-circle') + ' حول CodePatcher Terial</button>' +
       '</div><button type="button" class="btn" data-ui="cancel">إغلاق</button>',
       action => runAction(action));
   }
