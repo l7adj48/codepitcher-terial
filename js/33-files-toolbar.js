@@ -11,18 +11,32 @@
       { i: 'github', t: 'ربط حساب GitHub', d: 'للدفع والمستودعات الخاصة', fn: () => githubDialog('connect') },
       { i: 'download-cloud', t: 'استيراد من GitHub', d: 'المستودعات العامة بلا ربط', fn: () => ghImportDialog() }
     ];
-    const out = [{ h: linked ? c.repo + ' · ' + c.branch + (c.dir ? ' · ' + c.dir : '') : 'لم يُحدَّد مستودع بعد' + (raw.login ? ' · ' + raw.login : '') }];
-    if (linked) out.push(
-      { i: 'upload-cloud', t: 'دفع التعديلات', d: 'commit واحد إلى المستودع', fn: () => githubPush() },
-      { i: 'download-cloud', t: 'سحب آخر تحديثات', d: 'يسأل قبل استبدال أي ملف', fn: () => ghPull() },
-      { i: 'external', t: 'فتح المستودع', d: 'في المتصفح', fn: () => window.open('https://github.com/' + c.repo, '_blank', 'noopener') },
-      { sep: 1 });
-    out.push(
-      { i: 'import', t: 'استيراد مشروع من GitHub', fn: () => ghImportDialog() },
-      { i: linked ? 'folder-open' : 'github', t: linked ? 'تغيير المستودع' : 'اختيار مستودع', fn: () => githubDialog('pick') },
-      { i: 'plus', t: 'مستودع جديد', fn: () => githubDialog('create') },
+    if (!linked) return [
+      { h: 'لم يُحدَّد مستودع بعد' + (raw.login ? ' · ' + raw.login : '') },
+      { i: 'github', t: 'اختيار مستودع', d: 'اختر مستودعاً لهذا المشروع', fn: () => githubDialog('pick') },
+      { i: 'plus', t: 'مستودع جديد', d: 'إنشاء مستودع جديد على GitHub', fn: () => githubDialog('create') },
       { sep: 1 },
-      { i: 'settings', t: 'إعدادات GitHub', fn: () => githubDialog(linked ? 'set' : 'connect') });
+      { i: 'import', t: 'استيراد من مستودع آخر', d: 'مشروع جديد أو إضافة للحالي', fn: () => ghImportDialog() },
+      { sep: 1 },
+      { i: 'settings', t: 'إعدادات GitHub', d: 'التوكن، الفرع، نوع النشر', fn: () => githubDialog('connect') }
+    ];
+    const rp = String(c.repo).split('/');
+    const out = [
+      { repoHead: true, owner: rp[0] || '', name: rp[1] || c.repo, branch: c.branch, dir: c.dir, jk: !!c.jk, login: raw.login || '' },
+      { i: 'upload-cloud', t: 'دفع التعديلات', d: 'إرسال مشروعك إلى المستودع أعلاه في commit واحد', fn: () => githubPush() },
+      { i: 'download-cloud', t: 'سحب آخر تحديثات', d: 'جلب ملفات المستودع لمشروعك - يضيف الجديد ويسألك قبل استبدال أي ملف معدل', fn: () => ghPull() },
+      { i: 'external', t: 'فتح المستودع', d: 'في المتصفح', fn: () => window.open('https://github.com/' + c.repo, '_blank', 'noopener') },
+      { sep: 1 },
+      c.jk
+        ? { i: 'monitor', t: 'فتح التطبيق (PWA)', d: 'التحويل مفعّل - افتح موقعك على Pages', fn: () => window.open(jkSiteUrl(c.repo), '_blank', 'noopener') }
+        : { i: 'monitor', t: 'تحويل إلى تطبيق PWA', d: 'Pages + قابل للتثبيت - سيدفع المشروع ويُفعّل الموقع', fn: () => githubDialog('main') },
+      { sep: 1 },
+      { i: 'import', t: 'استيراد من مستودع آخر', d: 'من أي مستودع - مشروع جديد أو إضافة للحالي', fn: () => ghImportDialog() },
+      { i: 'folder-open', t: 'تغيير المستودع', d: 'اختر مستودعاً آخر لهذا المشروع', fn: () => githubDialog('pick') },
+      { i: 'plus', t: 'مستودع جديد', d: 'إنشاء مستودع جديد على GitHub', fn: () => githubDialog('create') },
+      { sep: 1 },
+      { i: 'settings', t: 'إعدادات GitHub', d: 'التوكن، الفرع، نوع النشر PWA', fn: () => githubDialog('set') }
+    ];
     return out;
   }
 
@@ -62,6 +76,7 @@
     const fns = [];
     pop.innerHTML = items.map(it => {
       if (it.sep) return '<div class="psep"></div>';
+      if (it.repoHead) return '<div class="pi-repo"><div class="pi-repo-name" dir="ltr">' + esc(it.owner) + '/<b>' + esc(it.name) + '</b></div><div class="pi-repo-meta" dir="ltr">' + esc(it.branch) + (it.dir ? ' · /' + esc(it.dir) : '') + (it.jk ? ' · PWA مفعّل' : ' · ملفات عادية') + (it.login ? ' · ' + esc(it.login) : '') + '</div></div>';
       if (it.h) return '<div class="pi-h" dir="auto">' + esc(it.h) + '</div>';
       fns.push(it.fn);
       return '<div class="pi' + (it.cls ? ' ' + it.cls : '') + '" role="menuitem" tabindex="0" data-n="' + (fns.length - 1) + '">' + ic(it.i, it.i === 'github' ? 'brand' : '') + '<span class="pt"><b>' + esc(it.t) + '</b>' + (it.d ? '<small>' + esc(it.d) + '</small>' : '') + '</span></div>';

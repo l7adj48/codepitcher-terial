@@ -78,9 +78,16 @@ function ghTargetCard(c) {
 /* نافذة رسالة الـ commit مع إظهار المستودع الذي سيُدفع إليه. تعيد النص، أو null عند الإلغاء */
 function ghAskPush(c, def) {
   return new Promise(res => {
-    ui.show(ghHead('') + ghTargetCard(c) +
+    const pwaLine = c.jk
+      ? '<div class="slabel">النشر: تطبيق PWA (Jekyll) - سيُفعَّل Pages عند الدفع</div>'
+      : '<div class="slabel">النشر: ملفات عادية - للتحويل إلى تطبيق PWA اختر «إعدادات النشر» بالأسفل</div>';
+    ui.show(ghHead('') + ghTargetCard(c) + pwaLine +
       '<div class="slabel">رسالة الـ commit</div><input type="text" id="uiIn" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false">' +
-      '<div class="srow"><button type="button" class="btn" data-ui="cancel">إلغاء</button><button type="button" class="btn primary" data-ui="ok">دفع</button></div>');
+      '<div class="srow"><button type="button" class="btn" data-act="changeRepo">تغيير المستودع…</button><button type="button" class="btn" data-act="pwaSet">إعدادات النشر…</button></div>' +
+      '<div class="srow"><button type="button" class="btn" data-ui="cancel">إلغاء</button><button type="button" class="btn primary" data-ui="ok">دفع</button></div>', act => {
+        if (act = 'changeRepo') { ui.close(null); setTimeout(() => githubDialog('pick'), 120); return; }
+        if (act = 'pwaSet') { ui.close(null); setTimeout(() => githubDialog('set'), 120); return; }
+      });
     ui.kind = 'prompt'; ui.resolve = res;
     const i = $('uiIn'); i.value = def || '';
     i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); ui.close(i.value); } });
@@ -197,7 +204,7 @@ async function ghFillSite(c) {
   GH_ST.site = s.url || '';
   if (s.k === 'on') el.innerHTML = uiNote('الموقع يعمل ✓ — ' + esc(s.t)) + (s.url ? '<div class="slabel" dir="ltr">' + esc(s.url) + '</div>' : '') + '<button type="button" class="btn primary" data-act="app">فتح التطبيق</button>';
   else if (s.k === 'na') el.innerHTML = uiNote('الموقع غير متاح: المستودع الخاص في الحساب المجاني لا يدعم GitHub Pages. اجعل المستودع عاماً لتحويله إلى تطبيق.');
-  else el.innerHTML = '<button type="button" class="btn" data-act="jkgo">تحويل المشروع إلى تطبيق (PWA)</button>' +
+  else el.innerHTML = '<button type="button" class="btn primary" data-act="jkgo">تحويل المشروع إلى تطبيق (PWA)</button>' +
     uiNote(s.k === 'unknown' ? 'تعذّر معرفة حالة الموقع، ويمكنك المحاولة رغم ذلك. ' : '') + uiNote('يصير مشروعك تطبيقاً قابلاً للتثبيت على الهاتف عبر GitHub Pages، ويُدفع إلى المستودع أعلاه.');
 }
 /* نافذة بعد الدفع/التفعيل: زر فتح التطبيق + تلميح التثبيت */
